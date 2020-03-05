@@ -21,7 +21,7 @@ fileConfig(config.config_file_name)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
-from fencex.models import db as target_metadata
+from fencex.app import db as target_metadata
 from fencex import config as conf
 
 config.set_main_option(

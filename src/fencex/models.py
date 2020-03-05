@@ -23,6 +23,9 @@ class User(db.Model):
     def add_identity(self, identity):
         self._identities.append(identity)
 
+    def get_user_id(self):
+        return self.id
+
 
 class Identity(db.Model):
     __tablename__ = "identities"

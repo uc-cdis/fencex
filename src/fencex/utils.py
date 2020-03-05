@@ -1,6 +1,6 @@
 import uuid
 
-from starlette.datastructures import URLPath
+from starlette.datastructures import URLPath, URL
 from starlette.requests import Request
 
 from . import config
@@ -22,7 +22,9 @@ async def get_user(request: Request, full=True):
         if full:
             user = await User.get(uid)
         else:
-            user = await db.select([User.id]).gino.load(User).first()
+            user = (
+                await db.select([User.id]).where(User.id == uid).gino.load(User).first()
+            )
         if user:
             return user
 
@@ -36,6 +38,12 @@ def url_for(request: Request, name, **path_params):
 
 
 def sanitize_redirect_url(uri, request: Request):
-    if uri not in request.app.all_paths:
+    url = URL(uri)
+    if (
+        url.is_secure != request.url.is_secure
+        or url.scheme != request.url.scheme
+        or url.netloc != request.url.netloc
+        or url.path not in request.app.all_paths
+    ):
         uri = url_for(request, "user_info")
     return uri

@@ -79,7 +79,7 @@ async def ras_callback(request: Request, do: bool = False):
 
     request.session.pop("merge", False)
     token = await oauth.ras.authorize_access_token(request)
-    # user = await oauth.ras.parse_id_token(request, token)
+    id_token = await oauth.ras.parse_id_token(request, token)
     user_info = await oauth.ras.userinfo(token=token)
 
     profile = dict(user_info)
