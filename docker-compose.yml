@@ -11,7 +11,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=fencex
-    command: /env/bin/uvicorn --host 0.0.0.0 --port 80 fencex.app:app --reload
+    command: /env/bin/uvicorn --host 0.0.0.0 --port 80 fencex.asgi:app --reload
   migration:
     build: .
     image: fencex

@@ -2,11 +2,13 @@ import logging
 import time
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.engine.url import URL
 
-from alembic import context
+from fencex import config as conf
+from fencex.app import db as target_metadata, load_modules
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,24 +18,20 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-# target_metadata = None
-from fencex.app import db as target_metadata
-from fencex import config as conf
+load_modules()
 
 config.set_main_option(
     "sqlalchemy.url",
-    str(URL(
-        drivername="postgresql",
-        host=conf.DB_HOST,
-        port=conf.DB_PORT,
-        username=conf.DB_USER,
-        password=str(conf.DB_PASSWORD),
-        database=conf.DB_DATABASE,
-    )),
+    str(
+        URL(
+            drivername=conf.DB_DRIVER,
+            host=conf.DB_HOST,
+            port=conf.DB_PORT,
+            username=conf.DB_USER,
+            password=str(conf.DB_PASSWORD),
+            database=conf.DB_DATABASE,
+        )
+    ),
 )
 
 
@@ -86,9 +84,9 @@ def run_migrations_online():
             retries += 1
             connection = connectable.connect()
         except Exception:
-            if retries < conf.DB_CONNECT_RETRIES:
+            if retries < conf.DB_RETRY_LIMIT:
                 logging.info("Waiting for the database to start...")
-                time.sleep(1)
+                time.sleep(conf.DB_RETRY_INTERVAL)
             else:
                 logging.error("Max retries reached.")
                 raise
