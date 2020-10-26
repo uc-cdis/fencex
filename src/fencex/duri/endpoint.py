@@ -74,7 +74,7 @@ async def jwks():
 @mod.get("/openid/connect/v1/userinfo")
 async def userinfo(request: Request):
     ResourceProtector()
-    return {'sub': 'xxx'}
+    return {"sub": "xxx"}
 
 
 def url_for(router, name, **path_params):
